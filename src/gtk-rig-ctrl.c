@@ -49,7 +49,7 @@
 #else
 #include <winsock2.h>
 #endif
-
+#include <stdlib.h>
 #include "compat.h"
 #include "gpredict-utils.h"
 #include "gtk-freq-knob.h"
@@ -340,7 +340,7 @@ static void track_downlink(GtkRigCtrl * ctrl)
 
     if (ctrl->trsp == NULL)
         return;
-
+    printf("track downlink called\n");
     /* ensure that we have a useable transponder config */
     if ((ctrl->trsp->downlow > 0) && (ctrl->trsp->uplow > 0))
     {
@@ -363,7 +363,7 @@ static void track_downlink(GtkRigCtrl * ctrl)
 static void track_uplink(GtkRigCtrl * ctrl)
 {
     gdouble         delta, down, up;
-
+    printf("track uplink called\n");
     if (ctrl->trsp == NULL)
         return;
 
@@ -408,7 +408,7 @@ static void downlink_changed_cb(GtkFreqKnob * knob, gpointer data)
 {
     GtkRigCtrl     *ctrl = GTK_RIG_CTRL(data);
     (void)knob;
-
+    
     if (ctrl->trsplock)
         track_downlink(ctrl);
 }
@@ -418,9 +418,11 @@ static void uplink_changed_cb(GtkFreqKnob * knob, gpointer data)
     GtkRigCtrl     *ctrl = GTK_RIG_CTRL(data);
 
     (void)knob;
-
+    printf("uplink changed cb\n");
     if (ctrl->trsplock)
         track_uplink(ctrl);
+    else
+	printf("trsp lock not enabled\n");
 }
 
 /*
@@ -1434,7 +1436,7 @@ static gboolean send_rigctld_command(GtkRigCtrl * ctrl, gint sock, gchar * buff,
 
     /* Enter critical section! */
     g_mutex_lock(&ctrl->writelock);
-
+    printf("Sending command to daemon <%s>\n",buff);
     retval = _send_rigctld_command(ctrl, sock, buff, buffout, sizeout);
 
     /* Leave critical section! */
@@ -1559,6 +1561,7 @@ static void exec_rx_cycle(GtkRigCtrl * ctrl)
        Note: If ctrl->lastrxf = 0.0 the sync has been invalidated (e.g. user pressed "tune")
        and no need to execute the dial feedback.
      */
+    printf("Las rxf is set as <%f>\n",ctrl->lastrxf);
     if ((ctrl->engaged) && (ctrl->lastrxf > 0.0))
     {
         if (ptt == FALSE)
@@ -1666,11 +1669,13 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
     gdouble         readfreq = 0.0, tmpfreq, satfreqd, satfrequ;
     gboolean        ptt = TRUE;
     gboolean        dialchanged = FALSE;
-
+    printf("In tx_cycle\n");
     /* get PTT status */
     if (ctrl->engaged && ctrl->conf->ptt)
     {
+        printf("engaged and we are ptt enabled\n");	
         ptt = get_ptt(ctrl, ctrl->sock);
+	printf("Got ptt \n");
     }
 
     /* Dial feedback:
@@ -1681,8 +1686,11 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
        Note: If ctrl->lasttxf = 0.0 the sync has been invalidated (e.g. user pressed "tune")
        and no need to execute the dial feedback.
      */
+    printf("Last txf <%f>\n",ctrl->lasttxf);
+    printf("Engaged is <%d>\n",ctrl->engaged);
     if ((ctrl->engaged) && (ctrl->lasttxf > 0.0))
     {
+	printf("in **\n");
         if (ptt == TRUE)
         {
             if (!get_freq_simplex(ctrl, ctrl->sock, &readfreq))
@@ -1694,11 +1702,13 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
         }
         else
         {
+            printf("No PTT set\n");
             readfreq = ctrl->lasttxf;
         }
 
         if (fabs(readfreq - ctrl->lasttxf) >= 1.0)
         {
+            printf("Dial manually changed ?\n");
             dialchanged = TRUE;
 
             /* user might have altered radio frequency => update transponder knob */
@@ -1738,12 +1748,15 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
     satfrequ = gtk_freq_knob_get_value(GTK_FREQ_KNOB(ctrl->SatFreqUp));
     if (ctrl->tracking)
     {
+        printf("We are tracking 0 \n");
         /* downlink */
         gtk_freq_knob_set_value(GTK_FREQ_KNOB(ctrl->RigFreqDown),
                                 satfreqd + ctrl->dd - ctrl->conf->lo);
+        printf("We are tracking downlink \n");
         /* uplink */
         gtk_freq_knob_set_value(GTK_FREQ_KNOB(ctrl->RigFreqUp),
                                 satfrequ + ctrl->du - ctrl->conf->loup);
+        printf("We are tracking uplink \n");
     }
     else
     {
@@ -1755,10 +1768,12 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
 
     tmpfreq = gtk_freq_knob_get_value(GTK_FREQ_KNOB(ctrl->RigFreqUp));
 
+    printf("We are tracking got tmpfreq for upload \n");
     /* if device is engaged, send freq command to radio */
-    if ((ctrl->engaged) && (ptt == TRUE) &&
+    if ((ctrl->engaged) && (ptt == FALSE) &&
         (fabs(ctrl->lasttxf - tmpfreq) >= 1.0))
     {
+        printf("Set freq (2) \n");	
         if (set_freq_simplex(ctrl, ctrl->sock, tmpfreq))
         {
             /* reset error counter */
@@ -1776,15 +1791,22 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
         }
         else
         {
+            printf("Set freq (2) Error \n");	
             ctrl->errcnt++;
         }
+    }
+    else
+    {
+	    printf("PTT Not set\n");
     }
 }
 
 static void exec_trx_cycle(GtkRigCtrl * ctrl)
 {
     exec_rx_cycle(ctrl);
-    exec_tx_cycle(ctrl);
+    printf("exec_toggle_tx_cycle");
+    exec_toggle_tx_cycle(ctrl);
+    //exec_tx_cycle(ctrl);
 }
 
 static void exec_toggle_cycle(GtkRigCtrl * ctrl)
@@ -1844,15 +1866,17 @@ static void exec_toggle_tx_cycle(GtkRigCtrl * ctrl)
     /* if we are in TX mode do nothing */
     if (ptt == TRUE)
     {
+	printf("ptt engaged .. not trying to set TX VFO\n");
         return;
     }
 
     /* Get the desired uplink frequency from controller */
     tmpfreq = gtk_freq_knob_get_value(GTK_FREQ_KNOB(ctrl->RigFreqUp));
-
+    printf("Ctrl Engaged is <%d>\n",ctrl->engaged);    
     /* if device is engaged, send freq command to radio */
     if ((ctrl->engaged) && (fabs(ctrl->lasttxf - tmpfreq) >= 10.0))
     {
+
         if (set_freq_toggle(ctrl, ctrl->sock, tmpfreq))
         {
             /* reset error counter */
@@ -2253,7 +2277,7 @@ static gboolean get_ptt(GtkRigCtrl * ctrl, gint sock)
     }
 
     g_free(buff);
-
+    printf("ptt status == <%d>\n",pttstat);
     return (pttstat == 1) ? TRUE : FALSE;
 }
 
@@ -2366,6 +2390,7 @@ static gboolean set_freq_toggle(GtkRigCtrl * ctrl, gint sock, gdouble freq)
 
     /* send command */
     buff = g_strdup_printf("I %10.0f\x0a", freq);
+    printf("Set freq toggle used\n");
     retcode = send_rigctld_command(ctrl, sock, buff, buffback, 128);
     g_free(buff);
 
@@ -2383,7 +2408,7 @@ static gboolean set_toggle(GtkRigCtrl * ctrl, gint sock)
     gchar          *buff;
     gchar           buffback[128];
     gboolean        retcode;
-
+    printf("Setup Toggle on radio\n");
     buff = g_strdup_printf("S 1 %d\x0a", ctrl->conf->vfoDown);
     retcode = send_rigctld_command(ctrl, sock, buff, buffback, 128);
     g_free(buff);
@@ -2731,6 +2756,7 @@ static void rigctrl_open(GtkRigCtrl * data)
             break;
 
         case RIG_TYPE_TRX:
+	    printf("Rig in TX/RX \n");
             exec_trx_cycle(ctrl);
             break;
 

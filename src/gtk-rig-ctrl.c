@@ -83,7 +83,9 @@ static gboolean unset_toggle(GtkRigCtrl * ctrl, gint sock);
 static gboolean get_freq_toggle(GtkRigCtrl * ctrl, gint sock, gdouble * freq);
 static gboolean get_ptt(GtkRigCtrl * ctrl, gint sock);
 static gboolean set_ptt(GtkRigCtrl * ctrl, gint sock, gboolean ptt);
-
+/* Mode methods */
+static gboolean set_mode(GtkRigCtrl * ctrl, gint sock, gchar *wanted_mode);
+static gboolean get_mode(GtkRigCtrl * ctrl, gint sock);
 /*  add thread for hamlib communication */
 gpointer        rigctl_run(gpointer data);
 static void     rigctrl_open(GtkRigCtrl * data);
@@ -746,7 +748,11 @@ static void trsp_selected_cb(GtkComboBox * box, gpointer data)
     }
     else if (i < n)
     {
+        printf("got Transponder -> setting info\n");
         ctrl->trsp = (trsp_t *) g_slist_nth_data(ctrl->trsplist, i);
+        printf("Mode should be <%s>\n",ctrl->trsp->mode);
+        set_mode(ctrl, ctrl->sock,ctrl->trsp->mode);
+        printf("Mode set called \n");
         trsp_tune_cb(NULL, data);
     }
     else
@@ -2299,6 +2305,55 @@ static gboolean set_ptt(GtkRigCtrl * ctrl, gint sock, gboolean ptt)
     return (check_set_response(buffback, retcode, __func__));
 
 }
+
+/* 
+Method to get the current mode.
+*/
+static gboolean get_mode(GtkRigCtrl * ctrl, gint sock)
+{
+    gchar          *buff, **vbuff;
+    gchar           buffback[128];
+    gboolean        retcode;
+    gchar           mode[10];
+
+    
+    buff = g_strdup_printf("m\x0a");
+    
+    retcode = send_rigctld_command(ctrl, sock, buff, buffback, 128);
+    if (retcode)
+    {
+        vbuff = g_strsplit(buffback, "\n", 4);
+        if (vbuff[0])
+            g_strcpy(mode,vbuff);
+
+        g_strfreev(vbuff);
+    }
+
+    g_free(buff);
+    printf("get mode  == <%d>\n",mode);
+    return mode;
+}
+
+/*
+Method to set the current mode.
+Not sure if we need to do this for both VFO's  
+*/
+static gboolean set_mode(GtkRigCtrl * ctrl, gint sock, gchar *wanted_mode)
+{
+    gchar          *buff;
+    gchar           buffback[128];
+    gboolean        retcode;
+
+    buff = g_strdup_printf("M %s 0\x0a",wanted_mode);
+    printf("Command to send is <%s>\n",buff);
+    retcode = send_rigctld_command(ctrl, sock, buff, buffback, 128);
+    g_free(buff);
+
+    return (check_set_response(buffback, retcode, __func__));
+
+}
+
+
 
 /*
  * Check for AOS and LOS and send signal if enabled for rig.

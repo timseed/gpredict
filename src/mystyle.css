@@ -72,3 +72,45 @@ GtkButton {
     font-size: 20px;
     border-radius: 15px;
 }
+
+
+#bt_tune
+   {
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+   }
+
+#bt_tune:active
+   {
+    color: red;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+   }
+
+#bt_lock
+   {
+	color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+   }
+
+#bt_lock:checked
+   {
+	color: red;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+   }
+

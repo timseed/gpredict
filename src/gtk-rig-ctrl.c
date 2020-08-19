@@ -1049,6 +1049,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* buttons */
     tune = gtk_button_new_with_label(_("T"));
+    gtk_widget_set_name(tune, "bt_tune");
     gtk_widget_set_tooltip_text(tune,
                                 _("Tune the radio to this transponder. "
                                   "The uplink and downlink will be set to the "
@@ -1058,6 +1059,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
     g_signal_connect(tune, "clicked", G_CALLBACK(trsp_tune_cb), ctrl);
 
     trsplock = gtk_toggle_button_new_with_label(_("L"));
+    gtk_widget_set_name(trsplock, "bt_lock");
     gtk_widget_set_tooltip_text(trsplock,
                                 _("Lock the uplink and the downlink to each "
                                   "other. Whenever you change the downlink "

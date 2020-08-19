@@ -455,6 +455,7 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
 
     /* satellite downlink frequency */
     ctrl->SatFreqDown = gtk_freq_knob_new(145890000.0, TRUE);
+    gtk_widget_set_name(ctrl->SatFreqDown, "lb_rig_dl_data");
     g_signal_connect(ctrl->SatFreqDown, "freq-changed",
                      G_CALLBACK(downlink_changed_cb), ctrl);
     gtk_box_pack_start(GTK_BOX(vbox), ctrl->SatFreqDown, TRUE, TRUE, 0);
@@ -484,8 +485,10 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
     gtk_label_set_markup(GTK_LABEL(label),
                          "<span size='large'><b>Radio:</b></span>");
     g_object_set(label, "xalign", 0.5f, "yalign", 1.0f, NULL);
+    gtk_widget_set_name(label, "lb_rig_dl_str");
     gtk_box_pack_start(GTK_BOX(hbox2), label, TRUE, TRUE, 0);
     ctrl->RigFreqDown = gtk_freq_knob_new(145890000.0, FALSE);
+    gtk_widget_set_name(ctrl->RigFreqDown, "lb_rig_dl_data");
     gtk_box_pack_start(GTK_BOX(hbox2), ctrl->RigFreqDown, TRUE, TRUE, 0);
 
     /* finish packing ... */
@@ -1083,17 +1086,22 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* Azimuth */
     label = gtk_label_new(_("Az:"));
+    gtk_widget_set_name(label, "lb_az_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 2, 1, 1);
     ctrl->SatAz = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->SatAz, "lb_az_data");
     g_object_set(ctrl->SatAz, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->SatAz, 1, 2, 1, 1);
 
     /* Elevation */
     label = gtk_label_new(_("El:"));
+    gtk_widget_set_name(label, "lb_el_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 3, 1, 1);
     ctrl->SatEl = gtk_label_new(buff);
+
+    gtk_widget_set_name(ctrl->SatEl, "lb_el_data");
     g_object_set(ctrl->SatEl, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->SatEl, 1, 3, 1, 1);
 

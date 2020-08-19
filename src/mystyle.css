@@ -114,3 +114,62 @@ GtkButton {
     border-radius: 15px;
    }
 
+#lb_az_str
+{
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#lb_az_data
+{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+#lb_el_data
+{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+#lb_el_str
+{
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#lb_rig_dl_str
+{
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+}
+
+#lb_rig_dl_data
+{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+#lb_rig_dl_data
+{
+ color: green;
+ font-family: DejaVu Sans;
+ font-style: normal;
+ font-weight: bold;
+ font-size: 20px;
+}

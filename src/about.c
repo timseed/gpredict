@@ -68,6 +68,7 @@ const gchar *authors[] = {
     "S. R. Sampson",
     "Stefan Lobas",
     "Stephane Fillod",
+    "Tim Seed, DU3TW",
     "Tom Jones",
     "T.S. Kelso",
     "Valentin Yakovenkov",

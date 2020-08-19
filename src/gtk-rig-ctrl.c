@@ -1309,6 +1309,7 @@ static GtkWidget *create_conf_widgets(GtkRigCtrl * ctrl)
 
     /* Engage button */
     ctrl->LockBut = gtk_toggle_button_new_with_label(_("Engage"));
+    gtk_widget_set_name(ctrl->LockBut, "bt_rig_engage");
     gtk_widget_set_tooltip_text(ctrl->LockBut,
                                 _("Engage the selected radio device"));
     g_signal_connect(ctrl->LockBut, "toggled", G_CALLBACK(rig_engaged_cb),
@@ -1323,7 +1324,7 @@ static GtkWidget *create_conf_widgets(GtkRigCtrl * ctrl)
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 3, 1, 1);
 
-    timer = gtk_spin_button_new_with_range(100, 5000, 10);
+    timer = gtk_spin_button_new_with_range(100, 10000, 10);
     gtk_spin_button_set_digits(GTK_SPIN_BUTTON(timer), 0);
     gtk_widget_set_tooltip_text(timer,
                                 _("This parameter controls the delay between "
@@ -3035,3 +3036,5 @@ GtkWidget      *gtk_rig_ctrl_new(GtkSatModule * module)
 
     return widget;
 }
+
+

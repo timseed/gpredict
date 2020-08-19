@@ -640,11 +640,19 @@ void myCSS(void){
     screen = gdk_display_get_default_screen (display);
     gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-    const gchar *myCssFile = "mystyle.css";
+    const gchar *myCssFile = "gpredict.css";
+    gchar          *confdir;
+    gchar          *css_to_load;
+    gchar          *dir;
+
+    confdir = get_user_conf_dir();
+    css_to_load  = g_strconcat(confdir, G_DIR_SEPARATOR_S, myCssFile, NULL);
+    g_free(confdir);
     GError *error = 0;
 
-    gtk_css_provider_load_from_file(provider, g_file_new_for_path(myCssFile), &error);
+    gtk_css_provider_load_from_file(provider, g_file_new_for_path(css_to_load), &error);
     printf("CSS file read in error is <%d>\n",error);
+    g_free(css_to_load);
     g_object_unref (provider);
 }
 

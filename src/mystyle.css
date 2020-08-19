@@ -16,7 +16,7 @@ GtkButton {
 #myChildTop {
     background-color: white;
 }
-
+#bt_rot_engage,
 #bt_rig_engage{
     color: green;
     font-family: DejaVu Sans;
@@ -27,6 +27,7 @@ GtkButton {
 }
 
 /* This is when it is being pressed */
+#bt_rot_engage:active,
 #bt_rig_engage:active{
     color: yellow;
     font-family: DejaVu Sans;
@@ -37,6 +38,7 @@ GtkButton {
 }
 
 /* This is when it is being pressed */
+#bt_rot_engage:checked,
 #bt_rig_engage:checked{
     color: red;
     font-family: DejaVu Sans;
@@ -167,6 +169,17 @@ GtkButton {
 
 #lb_rig_dl_data
 {
+ color: green;
+ font-family: DejaVu Sans;
+ font-style: normal;
+ font-weight: bold;
+ font-size: 20px;
+}
+
+#lb_az_str,
+#lb_az_data,
+#lb_el_str,
+#lb_el_data {
  color: green;
  font-family: DejaVu Sans;
  font-style: normal;

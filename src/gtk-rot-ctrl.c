@@ -1285,20 +1285,24 @@ static GtkWidget *create_target_widgets(GtkRotCtrl * ctrl)
                      ctrl);
 
     /* Azimuth */
-    label = gtk_label_new(_("Az:"));
+    label = gtk_label_new(_("Az:")); 
+    gtk_widget_set_name(label, "lb_az_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 1, 1, 1);
 
     ctrl->AzSat = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->AzSat, "lb_az_data");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->AzSat, 1, 1, 1, 1);
 
     /* Elevation */
     label = gtk_label_new(_("El:"));
+    gtk_widget_set_name(label, "lb_el_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 2, 1, 1);
 
     ctrl->ElSat = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->ElSat, "lb_el_data");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->ElSat, 1, 2, 1, 1);
 
@@ -1394,6 +1398,7 @@ static GtkWidget *create_conf_widgets(GtkRotCtrl * ctrl)
 
     /* Engage button */
     ctrl->LockBut = gtk_toggle_button_new_with_label(_("Engage"));
+    gtk_widget_set_name(ctrl->LockBut, "bt_rot_engage");
     gtk_widget_set_tooltip_text(ctrl->LockBut,
                                 _("Engage the selected rotor device"));
     g_signal_connect(ctrl->LockBut, "toggled", G_CALLBACK(rot_locked_cb),

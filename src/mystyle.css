@@ -18,7 +18,6 @@ GtkButton {
 }
 
 #bt_rig_engage{
-    background-color: white;
     color: green;
     font-family: DejaVu Sans;
     font-style: normal;
@@ -27,16 +26,49 @@ GtkButton {
     border-radius: 15px;
 }
 
-/* Triggers when it is being pressed */
+/* This is when it is being pressed */
 #bt_rig_engage:active{
-    background-color: white;
     color: yellow;
     font-family: DejaVu Sans;
-    }
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
 
-#myButton_red:hover,
-#myButton_yellow:hover,
-#myButton_green:hover,
-#myButton_blue:hover{
-   background-color: black;
+/* This is when it is being pressed */
+#bt_rig_engage:checked{
+    color: red;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+#bt_sat_track{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+#bt_sat_track:active{
+    color: yellow;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+#bt_sat_track:checked{
+    color: red;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
 }

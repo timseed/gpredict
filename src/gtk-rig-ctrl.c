@@ -1031,6 +1031,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* tracking button */
     track = gtk_toggle_button_new_with_label(_("Track"));
+    gtk_widget_set_name(track, "bt_sat_track");
     gtk_widget_set_tooltip_text(track,
                                 _("Track the satellite transponder.\n"
                                   "Enabling this button will apply Doppler "

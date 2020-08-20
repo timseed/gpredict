@@ -42,6 +42,10 @@ Ubuntu systems you can install the build dependencies using:
   sudo apt install libtool intltool autoconf automake libcurl4-openssl-dev
   sudo apt install pkg-config libglib2.0-dev libgtk-3-dev libgoocanvas-2.0-dev
 
+If you are adding Audio capability
+
+  sudo apt-get install liballegro5-dev
+
 
 To build and install gpredict from source, first unpack the source package:
 

@@ -96,7 +96,7 @@ static void     remove_timer(GtkRigCtrl * data);
 static void     start_timer(GtkRigCtrl * data);
 
 static GtkBoxClass *parent_class = NULL;
-
+bool bFirstTime = true;
 
 static void gtk_rig_ctrl_destroy(GtkWidget * widget)
 {
@@ -245,7 +245,8 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
             g_strdup_printf("<span size='xx-large'><b>%s %02d:%02d</b></span>",
                             aoslos, m, s);
 
-    	if (ctrl->target->el < 0.0)
+    	if ((ctrl->target->el < 0.0) & (bFirstTime))
+		bFirstTime = false;
 		printf("I want sound \n");
 		ALLEGRO_DISPLAY *display = NULL;
    ALLEGRO_SAMPLE *sample=NULL;
@@ -265,6 +266,32 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
    if (!al_reserve_samples(1)){
       fprintf(stderr, "failed to reserve samples!\n");
    }
+
+
+   sample = al_load_sample( "./audio/arriving.wav" );
+   if (!sample){
+      printf( "Audio clip sample not loaded!\n" ); 
+      return -1;
+   }
+   else
+   {
+	printf("Audio sample loaded correctly\n");
+   }
+
+//   display = al_create_display(40, 40);
+
+  // if(!display){
+  //    fprintf(stderr, "failed to create display!\n");
+  //    return -1;
+  // }
+
+   /* Loop the sample until the display closes. */
+   al_play_sample(sample, 1.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+
+   al_rest(10.0);
+
+   al_destroy_display(display);
+   al_destroy_sample(sample);
 
 
     }

@@ -39,7 +39,10 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <math.h>
-
+/* Audio */
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 /* NETWORK */
 #ifndef WIN32
 #include <arpa/inet.h>          /* htons() */
@@ -237,10 +240,34 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
             g_strdup_printf
             ("<span size='xx-large'><b>%s %02d:%02d:%02d</b></span>", aoslos,
              h, m, s);
-    else
+    else {
         buff =
             g_strdup_printf("<span size='xx-large'><b>%s %02d:%02d</b></span>",
                             aoslos, m, s);
+
+    	if (ctrl->target->el < 0.0)
+		printf("I want sound \n");
+		ALLEGRO_DISPLAY *display = NULL;
+   ALLEGRO_SAMPLE *sample=NULL;
+
+   if(!al_init()){
+      fprintf(stderr, "failed to initialize allegro!\n");
+   }
+
+   if(!al_install_audio()){
+      fprintf(stderr, "failed to initialize audio!\n");
+   }
+
+   if(!al_init_acodec_addon()){
+      fprintf(stderr, "failed to initialize audio codecs!\n");
+   }
+
+   if (!al_reserve_samples(1)){
+      fprintf(stderr, "failed to reserve samples!\n");
+   }
+
+
+    }
 
     gtk_label_set_markup(GTK_LABEL(ctrl->SatCnt), buff);
 

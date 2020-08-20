@@ -28,6 +28,9 @@ fi
 # check for libm
 AC_CHECK_LIB([m], [sin],, AC_MSG_ERROR([Can not find libm. Check your libc installation]))
 
+# check for allegro
+AC_CHECK_LIB([allegro-5], [al_init],, AC_MSG_ERROR([Can not find allegro-5. Check your allogro installation]))
+
 # check for libcurl
 if pkg-config --atleast-version=7.19 libcurl; then
     CFLAGS="$CFLAGS `pkg-config --cflags libcurl`"

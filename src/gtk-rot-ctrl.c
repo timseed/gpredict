@@ -62,13 +62,12 @@
 
 static GtkVBoxClass *parent_class = NULL;
 
-
 /* Open the rotcld socket. Returns file descriptor or -1 if an error occurs */
 static gint rotctld_socket_open(const gchar * host, gint port)
 {
     struct sockaddr_in ServAddr;
     struct hostent *h;
-    gint            sock;
+    gint            sock=-1;
     gint            status;
 
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -126,7 +125,9 @@ static gint rotctld_socket_open(const gchar * host, gint port)
 static void rotctld_socket_close(gint * sock)
 {
     gint            written;
-
+    printf("Closing rotcld\n");
+    if (*sock != -1)
+    {
     /*shutdown the rotctld connect */
     written = send(*sock, "q\x0a", 2, 0);
     if (written != 2)
@@ -143,7 +144,7 @@ static void rotctld_socket_close(gint * sock)
     shutdown(*sock, SD_BOTH);
     closesocket(*sock);
 #endif
-
+    }
     *sock = -1;
 }
 

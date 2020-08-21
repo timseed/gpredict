@@ -13,10 +13,10 @@ GtkButton {
     border-width: 1px;
 }
 
-#myChildTop {
-    background-color: white;
-}
+#bt_tune,
+#bt_lock,
 #bt_rot_engage,
+#bt_sat_track,
 #bt_rig_engage{
     color: green;
     font-family: DejaVu Sans;
@@ -27,6 +27,7 @@ GtkButton {
 }
 
 /* This is when it is being pressed */
+#bt_tune:active,
 #bt_rot_engage:active,
 #bt_rig_engage:active{
     color: yellow;
@@ -39,33 +40,8 @@ GtkButton {
 
 /* This is when it is being pressed */
 #bt_rot_engage:checked,
-#bt_rig_engage:checked{
-    color: red;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-}
-
-#bt_sat_track{
-    color: green;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-}
-
-#bt_sat_track:active{
-    color: yellow;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-}
-
+#bt_lock:checked,
+#bt_rig_engage:checked,
 #bt_sat_track:checked{
     color: red;
     font-family: DejaVu Sans;
@@ -76,55 +52,14 @@ GtkButton {
 }
 
 
-#bt_tune
-   {
-    color: green;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-   }
-
-#bt_tune:active
-   {
-    color: red;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-   }
-
-#bt_lock
-   {
-	color: green;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-   }
-
-#bt_lock:checked
-   {
-	color: red;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;
-   }
-
-#lb_az_str
-{
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-}
-
-#lb_az_data
+#lb_az_data,
+#lb_rig_dl_data,
+#lb_rig_up_data,
+#lb_el_data,
+#kb_sat_freq_down,
+#kb_rig_freq_down,
+#kb_sat_freq_up,
+#kb_rig_freq_up
 {
     color: green;
     font-family: DejaVu Sans;
@@ -134,48 +69,13 @@ GtkButton {
 }
 
 
-#lb_el_data
-{
-    color: green;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-}
-#lb_el_str
-{
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-}
-
-#lb_rig_dl_str
-{
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-}
-
-#lb_rig_dl_data
-{
-    color: green;
-    font-family: DejaVu Sans;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-}
-
-
-#lb_rig_dl_data
-{
- color: green;
- font-family: DejaVu Sans;
- font-style: normal;
- font-weight: bold;
- font-size: 20px;
-}
-
+#bt_tune,
+#bt_lock,
+#lb_az_str,
+#lb_az_data,
+#lb_el_str,
+#lb_el_data,
+#bt_rig_engage,
 #lb_az_str,
 #lb_az_data,
 #lb_el_str,

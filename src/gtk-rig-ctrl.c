@@ -455,7 +455,7 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
 
     /* satellite downlink frequency */
     ctrl->SatFreqDown = gtk_freq_knob_new(145890000.0, TRUE);
-    gtk_widget_set_name(ctrl->SatFreqDown, "lb_rig_dl_data");
+    gtk_widget_set_name(ctrl->SatFreqDown, "kb_sat_freq_down");
     g_signal_connect(ctrl->SatFreqDown, "freq-changed",
                      G_CALLBACK(downlink_changed_cb), ctrl);
     gtk_box_pack_start(GTK_BOX(vbox), ctrl->SatFreqDown, TRUE, TRUE, 0);
@@ -483,12 +483,12 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
     /* Radio downlink frequency */
     label = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(label),
-                         "<span size='large'><b>Radio:</b></span>");
+                         "<span size='large'><b>Radio Rx:</b></span>");
     g_object_set(label, "xalign", 0.5f, "yalign", 1.0f, NULL);
     gtk_widget_set_name(label, "lb_rig_dl_str");
     gtk_box_pack_start(GTK_BOX(hbox2), label, TRUE, TRUE, 0);
     ctrl->RigFreqDown = gtk_freq_knob_new(145890000.0, FALSE);
-    gtk_widget_set_name(ctrl->RigFreqDown, "lb_rig_dl_data");
+    gtk_widget_set_name(ctrl->RigFreqDown, "kb_rig_freq_down");
     gtk_box_pack_start(GTK_BOX(hbox2), ctrl->RigFreqDown, TRUE, TRUE, 0);
 
     /* finish packing ... */
@@ -525,6 +525,7 @@ static GtkWidget *create_uplink_widgets(GtkRigCtrl * ctrl)
 
     /* satellite uplink frequency */
     ctrl->SatFreqUp = gtk_freq_knob_new(145890000.0, TRUE);
+    gtk_widget_set_name(ctrl->SatFreqUp, "kb_sat_freq_up");
     g_signal_connect(ctrl->SatFreqUp, "freq-changed",
                      G_CALLBACK(uplink_changed_cb), ctrl);
     gtk_box_pack_start(GTK_BOX(vbox), ctrl->SatFreqUp, TRUE, TRUE, 0);
@@ -552,10 +553,11 @@ static GtkWidget *create_uplink_widgets(GtkRigCtrl * ctrl)
     /* Radio uplink frequency */
     label = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(label),
-                         "<span size='large'><b>Radio:</b></span>");
+                         "<span size='large'><b>Radio Tx:</b></span>");
     g_object_set(label, "xalign", 0.5f, "yalign", 1.0f, NULL);
     gtk_box_pack_start(GTK_BOX(hbox2), label, TRUE, TRUE, 0);
-    ctrl->RigFreqUp = gtk_freq_knob_new(145890000.0, FALSE);
+    ctrl->RigFreqUp = gtk_freq_knob_new(145891000.0, FALSE);
+    gtk_widget_set_name(ctrl->RigFreqUp, "kb_rig_freq_up");
     gtk_box_pack_start(GTK_BOX(hbox2), ctrl->RigFreqUp, TRUE, TRUE, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox1, TRUE, TRUE, 10);

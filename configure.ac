@@ -29,19 +29,20 @@ AC_CHECK_HEADER([allegro5/allegro.h],[],
 
 # Check Allegro Audio is available
 if pkg-config --atleast-version=0.29  allegro_audio-5; then
-	LIBS="$LIBS `pkg-config --libs allegro_audio-5`"
+	LIBS+="-L /usr/local/lib -l allegro_audio allegro_acodec allegro_main allegro"
+	LIBS+="$LIBS `pkg-config --libs allegro_audio-5`"
 else
 	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
 fi
 # Check Allegro main is available
 if pkg-config --atleast-version=0.29  allegro_main-5; then
-	LIBS="$LIBS `pkg-config --libs allegro_main-5`"
+	LIBS+="$LIBS `pkg-config --libs allegro_main-5`"
 else
 	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
 fi
 # Check Allegro codec is available
 if pkg-config --atleast-version=0.29  allegro_acodec-5; then
-	LIBS="$LIBS `pkg-config --libs allegro_acodec-5`"
+	LIBS+="$LIBS `pkg-config --libs allegro_acodec-5`"
 else
 	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
 fi

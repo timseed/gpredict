@@ -63,6 +63,15 @@
 #include "sat-cfg.h"
 #include "trsp-conf.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+#define MAIN_SLEEP 2
+#define THREAD_SLEEP 1
+#define AUDIO_FILE  "/Users/tim/Dev/gpredict-2.2.1/allegro_test/arriving.wav"
 
 #define AZEL_FMTSTR "%7.2f\302\260"
 #define MAX_ERROR_COUNT 5
@@ -77,6 +86,8 @@ static void     exec_toggle_tx_cycle(GtkRigCtrl * ctrl);
 static void     exec_duplex_cycle(GtkRigCtrl * ctrl);
 static void     exec_duplex_tx_cycle(GtkRigCtrl * ctrl);
 static void     exec_dual_rig_cycle(GtkRigCtrl * ctrl);
+int   play_audio(void);
+static pthread_t thread2;
 static gboolean check_aos_los(GtkRigCtrl * ctrl);
 static gboolean set_freq_simplex(GtkRigCtrl * ctrl, gint sock, gdouble freq);
 static gboolean get_freq_simplex(GtkRigCtrl * ctrl, gint sock, gdouble * freq);
@@ -86,6 +97,7 @@ static gboolean unset_toggle(GtkRigCtrl * ctrl, gint sock);
 static gboolean get_freq_toggle(GtkRigCtrl * ctrl, gint sock, gdouble * freq);
 static gboolean get_ptt(GtkRigCtrl * ctrl, gint sock);
 static gboolean set_ptt(GtkRigCtrl * ctrl, gint sock, gboolean ptt);
+static pthread_mutex_t mtx= PTHREAD_MUTEX_INITIALIZER;
 
 /*  add thread for hamlib communication */
 gpointer        rigctl_run(gpointer data);
@@ -194,8 +206,8 @@ GType gtk_rig_ctrl_get_type()
         };
 
         gtk_rig_ctrl_type = g_type_register_static(GTK_TYPE_BOX,
-                                                   "GtkRigCtrl",
-                                                   &gtk_rig_ctrl_info, 0);
+                            "GtkRigCtrl",
+                            &gtk_rig_ctrl_info, 0);
     }
 
     return gtk_rig_ctrl_type;
@@ -209,12 +221,14 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
     gchar          *buff;
     guint           h, m, s;
     gchar          *aoslos;
+    bool 	   bAOS=false;
 
     /* select AOS or LOS time depending on target elevation */
     if (ctrl->target->el < 0.0)
     {
         targettime = ctrl->target->aos;
         aoslos = g_strdup_printf(_("AOS in"));
+	bAOS=true;
     }
     else
     {
@@ -241,65 +255,40 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
             ("<span size='xx-large'><b>%s %02d:%02d:%02d</b></span>", aoslos,
              h, m, s);
     else {
+	    // Under an hour !!
         buff =
             g_strdup_printf("<span size='xx-large'><b>%s %02d:%02d</b></span>",
                             aoslos, m, s);
+        /* ZZZ */
 
-    	if ((ctrl->target->el < 0.0) & (bFirstTime))
-		bFirstTime = false;
-		printf("I want sound \n");
-		ALLEGRO_DISPLAY *display = NULL;
-   ALLEGRO_SAMPLE *sample=NULL;
+        if ((ctrl->target->el < 0.0) & (bFirstTime))
+        {
+		if (bAOS)
+		{
+			printf("AOS expected in %2d min %2d s\n",m,s);
+		}
+#ifdef SOUND
+            bFirstTime = false;
+            /* Create independent threads each of which will execute function */
+            int iret2 = pthread_create( &thread2, NULL, play_audio, NULL);
+            /* Wait till threads are complete before main continues. Unless we  */
+            /* wait we run the risk of executing an exit which will terminate   */
+            /* the process and all threads before the threads have completed.   */
+            sleep(MAIN_SLEEP);
+            if (pthread_mutex_trylock(&mtx))
+            {
+                printf("Count is ");
+                sleep(MAIN_SLEEP);
+            }
+            printf("in Main got lock\n");
+            pthread_join( thread2, NULL);
+#endif
+            gtk_label_set_markup(GTK_LABEL(ctrl->SatCnt), buff);
 
-   if(!al_init()){
-      fprintf(stderr, "failed to initialize allegro!\n");
-   }
-
-   if(!al_install_audio()){
-      fprintf(stderr, "failed to initialize audio!\n");
-   }
-
-   if(!al_init_acodec_addon()){
-      fprintf(stderr, "failed to initialize audio codecs!\n");
-   }
-
-   if (!al_reserve_samples(1)){
-      fprintf(stderr, "failed to reserve samples!\n");
-   }
-
-
-   sample = al_load_sample( "./audio/arriving.wav" );
-   if (!sample){
-      printf( "Audio clip sample not loaded!\n" ); 
-      return -1;
-   }
-   else
-   {
-	printf("Audio sample loaded correctly\n");
-   }
-
-//   display = al_create_display(40, 40);
-
-  // if(!display){
-  //    fprintf(stderr, "failed to create display!\n");
-  //    return -1;
-  // }
-
-   /* Loop the sample until the display closes. */
-   al_play_sample(sample, 1.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-
-   al_rest(10.0);
-
-   al_destroy_display(display);
-   al_destroy_sample(sample);
-
-
+            g_free(buff);
+            g_free(aoslos);
+        }
     }
-
-    gtk_label_set_markup(GTK_LABEL(ctrl->SatCnt), buff);
-
-    g_free(buff);
-    g_free(aoslos);
 }
 
 /*
@@ -760,7 +749,7 @@ static void trsp_tune_cb(GtkButton * button, gpointer data)
     if ((ctrl->trsp->downlow > 0) && (ctrl->trsp->downhigh > 0))
     {
         freq = ctrl->trsp->downlow +
-            abs(ctrl->trsp->downhigh - ctrl->trsp->downlow) / 2;
+               abs(ctrl->trsp->downhigh - ctrl->trsp->downlow) / 2;
         gtk_freq_knob_set_value(GTK_FREQ_KNOB(ctrl->SatFreqDown), freq);
 
         /* invalidate RIG<->GPREDICT sync */
@@ -771,7 +760,7 @@ static void trsp_tune_cb(GtkButton * button, gpointer data)
     if ((ctrl->trsp->uplow > 0) && (ctrl->trsp->uphigh > 0))
     {
         freq = ctrl->trsp->uplow +
-            abs(ctrl->trsp->uphigh - ctrl->trsp->uplow) / 2;
+               abs(ctrl->trsp->uphigh - ctrl->trsp->uplow) / 2;
         gtk_freq_knob_set_value(GTK_FREQ_KNOB(ctrl->SatFreqUp), freq);
 
         /* invalidate RIG<->GPREDICT sync */
@@ -1422,7 +1411,7 @@ static void store_sats(gpointer key, gpointer value, gpointer user_data)
     (void)key;
 
     ctrl->sats = g_slist_insert_sorted(ctrl->sats, sat,
-                                      (GCompareFunc) sat_name_compare);
+                                       (GCompareFunc) sat_name_compare);
 }
 
 static gboolean _send_rigctld_command(GtkRigCtrl * ctrl, gint sock, gchar * buff,
@@ -1482,7 +1471,7 @@ static gboolean _send_rigctld_command(GtkRigCtrl * ctrl, gint sock, gchar * buff
 }
 
 static gboolean send_rigctld_command(GtkRigCtrl * ctrl, gint sock, gchar * buff,
-                                      gchar * buffout, gint sizeout)
+                                     gchar * buffout, gint sizeout)
 {
     gboolean retval;
 
@@ -1497,7 +1486,7 @@ static gboolean send_rigctld_command(GtkRigCtrl * ctrl, gint sock, gchar * buff,
 }
 
 static inline gboolean check_set_response(gchar * buffback, gboolean retcode,
-                                          const gchar * function)
+        const gchar * function)
 {
     if (retcode == TRUE)
     {
@@ -1515,7 +1504,7 @@ static inline gboolean check_set_response(gchar * buffback, gboolean retcode,
 }
 
 static inline gboolean check_get_response(gchar * buffback, gboolean retcode,
-                                          const gchar * function)
+        const gchar * function)
 {
     if (retcode == TRUE)
     {
@@ -1691,7 +1680,7 @@ static void exec_rx_cycle(GtkRigCtrl * ctrl)
 
     /* if device is engaged, send freq command to radio */
     if ((ctrl->engaged) && (ptt == FALSE) &&
-        (fabs(ctrl->lastrxf - tmpfreq) >= 1.0))
+            (fabs(ctrl->lastrxf - tmpfreq) >= 1.0))
     {
         if (set_freq_simplex(ctrl, ctrl->sock, tmpfreq))
         {
@@ -1811,7 +1800,7 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
 
     /* if device is engaged, send freq command to radio */
     if ((ctrl->engaged) && (ptt == TRUE) &&
-        (fabs(ctrl->lasttxf - tmpfreq) >= 1.0))
+            (fabs(ctrl->lasttxf - tmpfreq) >= 1.0))
     {
         if (set_freq_simplex(ctrl, ctrl->sock, tmpfreq))
         {
@@ -1857,7 +1846,7 @@ static void exec_toggle_cycle(GtkRigCtrl * ctrl)
         g_get_current_time(&current_time);
 
         if ((ctrl->last_toggle_tx == -1) ||
-            ((current_time.tv_sec - ctrl->last_toggle_tx) >= 10))
+                ((current_time.tv_sec - ctrl->last_toggle_tx) >= 10))
         {
             /* it's time to update TX freq */
             exec_toggle_tx_cycle(ctrl);
@@ -2198,7 +2187,7 @@ static void exec_dual_rig_cycle(GtkRigCtrl * ctrl)
         }
 
         if (dialchanged)
-        {                       /* on uplink */
+        {   /* on uplink */
             /* update downlink */
             satfreqd =
                 gtk_freq_knob_get_value(GTK_FREQ_KNOB(ctrl->SatFreqDown));
@@ -2637,7 +2626,7 @@ static gboolean key_press_cb(GtkWidget * widget, GdkEventKey * pKey,
     {
         switch (pKey->keyval)
         {
-            /* keyvals not in API docs. See <gdk/gdkkeysyms.h> for a complete list */
+        /* keyvals not in API docs. See <gdk/gdkkeysyms.h> for a complete list */
         case GDK_KEY_space:
             sat_log_log(SAT_LOG_LEVEL_INFO,
                         _("%s: Detected SPACEBAR pressed event"), __func__);
@@ -2742,7 +2731,7 @@ static void rigctrl_close(GtkRigCtrl * data)
     remove_timer(ctrl);
 
     if ((ctrl->conf->type == RIG_TYPE_TOGGLE_AUTO) ||
-        (ctrl->conf->type == RIG_TYPE_TOGGLE_MAN))
+            (ctrl->conf->type == RIG_TYPE_TOGGLE_MAN))
     {
         unset_toggle(ctrl, ctrl->sock);
     }
@@ -2982,7 +2971,7 @@ GtkWidget      *gtk_rig_ctrl_new(GtkSatModule * module)
     {
         /* get next pass for target satellite */
         GTK_RIG_CTRL(widget)->pass = get_next_pass(rigctrl->target,
-                                                   rigctrl->qth, 3.0);
+                                     rigctrl->qth, 3.0);
     }
 
     /* create contents */
@@ -3008,3 +2997,75 @@ GtkWidget      *gtk_rig_ctrl_new(GtkSatModule * module)
 
     return widget;
 }
+
+
+
+
+
+/*
+ * How to play an wav file from C code.
+ *
+ * This is using a thread to play the sound - so that the main-code, can
+ * perform something useful - err like counting a number....
+ *
+ *
+ *
+ */
+
+
+
+
+int   play_audio(void)
+{
+    pthread_mutex_lock( &mtx );
+    printf(  "al_init\n" );
+    sleep(THREAD_SLEEP);
+    if (!al_init()) {
+        pthread_mutex_unlock(&mtx);
+        return 1;
+    }
+    printf(  "install_audio\n" );
+    if (!al_install_audio()) {
+        pthread_mutex_unlock(&mtx);
+        return 2;
+    }
+    sleep(THREAD_SLEEP);
+    printf(  "ac_codec\n" );
+    if (!al_init_acodec_addon()) {
+        pthread_mutex_unlock(&mtx);
+        return 3;
+    }
+    sleep(THREAD_SLEEP);
+    printf(  "reserve_samples\n" );
+    if (!al_reserve_samples(1)) {
+        pthread_mutex_unlock(&mtx);
+        return 4;
+    }
+    sleep(THREAD_SLEEP);
+    ALLEGRO_SAMPLE *idle_sound = al_load_sample(AUDIO_FILE);
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(idle_sound);
+    if (!idle_sound || !sample_instance) {
+        printf("Setup error.\n");
+        pthread_mutex_unlock(&mtx);
+        return 5;
+    }
+    ALLEGRO_SAMPLE_ID sample_id;
+
+    if (!al_play_sample(idle_sound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, &sample_id)) {
+        printf("Failed to play sample.\n");
+    }
+    if (!al_play_sample_instance(sample_instance)) {
+        printf("Failed to play sample instance.\n");
+    }
+    al_rest(5.0);
+
+    al_destroy_sample_instance(sample_instance);
+    al_destroy_sample(idle_sound);
+    printf(  "Thread I have finished" );
+    pthread_mutex_unlock(&mtx);
+    return 1;
+}
+
+
+
+

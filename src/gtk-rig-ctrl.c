@@ -220,7 +220,7 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
     {
         targettime = ctrl->target->aos;
         aoslos = g_strdup_printf(_("AOS in"));
-	bAOS=true;
+        bAOS=true;
     }
     else
     {
@@ -247,7 +247,7 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
             ("<span size='xx-large'><b>%s %02d:%02d:%02d</b></span>", aoslos,
              h, m, s);
     else {
-	    // Under an hour !!
+        // Under an hour !!
         buff =
             g_strdup_printf("<span size='xx-large'><b>%s %02d:%02d</b></span>",
                             aoslos, m, s);
@@ -256,36 +256,39 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
         if ((ctrl->target->el < 0.0) & (bFirstTime))
         {
 #ifndef QUIET
-			
-	   if ( ((m==5) && (s==0))|
-		((m==3) && (s==0))|
-		((m==1) && (s==0))|
-		((m==0) && (s==30))|
-		((m==0) && (s==10)))
-		{
-		// printf("Timer triggered at %02dm %02ds\n",m,s);
-		if (pthread_mutex_trylock(&audio_running)==0) /* Success */
-		{
-			// printf("Create Audio thread\n");
-            		/* Create independent threads each of which will execute function */
-		        int iret2 = pthread_create( &thread2, NULL, play_audio, NULL);
-		        sleep(MAIN_SLEEP);
-		}
-		}
-	   	if (thread2!=NULL)
-		{
-			// printf("Audio Mutex is active checking mtx\n");
-			if (pthread_mutex_trylock(&mtx)==0) /* Success */
-			{
-				///printf("Audio Thread has finished\n");
-				pthread_join( thread2, NULL);
-				thread2= NULL;
-				//printf("Unlocking mtx\n");
-				pthread_mutex_unlock(&mtx);
-				//printf("Unlocking audio_mtx\n");
-				pthread_mutex_unlock(&audio_running);
-			}
-		}
+
+            if ( ((m==5) && (s==0))|
+                    ((m==3) && (s==0))|
+                    ((m==1) && (s==0))|
+                    ((m==0) && (s==30))|
+                    ((m==0) && (s==10))|
+		     (m>1))
+            {
+                sat_log_log(SAT_LOG_LEVEL_ERROR,
+                            _("Timer triggered at %02d:%02d"),
+                            __FILE__, __LINE__, m, s);
+                if (pthread_mutex_trylock(&audio_running)==0) /* Success */
+                {
+                    // printf("Create Audio thread\n");
+                    /* Create independent threads each of which will execute function */
+                    int iret2 = pthread_create( &thread2, NULL, play_audio, NULL);
+                    sleep(MAIN_SLEEP);
+                }
+            }
+            if (thread2!=NULL)
+            {
+                // printf("Audio Mutex is active checking mtx\n");
+                if (pthread_mutex_trylock(&mtx)==0) /* Success */
+                {
+                    ///printf("Audio Thread has finished\n");
+                    pthread_join( thread2, NULL);
+                    thread2= NULL;
+                    //printf("Unlocking mtx\n");
+                    pthread_mutex_unlock(&mtx);
+                    //printf("Unlocking audio_mtx\n");
+                    pthread_mutex_unlock(&audio_running);
+                }
+            }
 
 #endif
             gtk_label_set_markup(GTK_LABEL(ctrl->SatCnt), buff);

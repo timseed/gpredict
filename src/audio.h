@@ -7,6 +7,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
+#include "compat.h"
 #undef main
 #define MAIN_SLEEP 2
 #define THREAD_SLEEP 1

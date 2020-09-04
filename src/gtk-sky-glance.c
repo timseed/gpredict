@@ -37,6 +37,10 @@
  *
  * When we get additional space due to resizing, the space will be allocated
  * to make the rectangles taller.
+ *
+ * Tim, DU3TW. I have modded this so that the Vertical location on the page
+ * reflacts the MAX Elevation during the pass.
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -332,11 +336,12 @@ static void size_allocate_cb(GtkWidget * widget, GtkAllocation * allocation,
         curcat = 0;
         y = 10.0;
         h = 10.0;
+	int box_height=0;
         for (i = 0; i < n; i++)
         {
             /* get pass */
             skp = (sky_pass_t *) g_slist_nth_data(skg->passes, i);
-
+	    /* Duration of the pass */ 
             x = t2x(skg, skp->pass->aos);
             w = t2x(skg, skp->pass->los) - x;
 
@@ -357,9 +362,10 @@ static void size_allocate_cb(GtkWidget * widget, GtkAllocation * allocation,
                     g_object_set(obj, "x", x + w + 5, "y", y + h / 2.0,
                                  "anchor", GOO_CANVAS_ANCHOR_W, NULL);
             }
-
+	    // Grab max_el from the pass data, and use this as a height indicator. 
+	    box_height=skp->pass->max_el;
             g_object_set(skp->box,
-                         "x", x, "y", y, "width", w, "height", h, NULL);
+                         "x", x, "y", y, "width", w, "height", h+box_height, NULL);
             /* need to raise item, otherwise it will not receive new events */
             goo_canvas_item_raise(skp->box, NULL);
         }

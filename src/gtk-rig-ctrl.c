@@ -263,8 +263,7 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
                     ((m==3) && (s==0))|
                     ((m==1) && (s==0))|
                     ((m==0) && (s==30))|
-                    ((m==0) && (s==10))|
-		     (m>1))
+                    ((m==0) && (s==10)))
             {
                 sat_log_log(SAT_LOG_LEVEL_ERROR,
                             _("Timer triggered at %02d:%02d"),
@@ -461,7 +460,7 @@ static void downlink_changed_cb(GtkFreqKnob * knob, gpointer data)
 {
     GtkRigCtrl     *ctrl = GTK_RIG_CTRL(data);
     (void)knob;
-    
+
     if (ctrl->trsplock)
         track_downlink(ctrl);
 }
@@ -475,7 +474,7 @@ static void uplink_changed_cb(GtkFreqKnob * knob, gpointer data)
     if (ctrl->trsplock)
         track_uplink(ctrl);
     else
-	printf("trsp lock not enabled\n");
+        printf("trsp lock not enabled\n");
 }
 
 /*
@@ -506,6 +505,7 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
 
     /* satellite downlink frequency */
     ctrl->SatFreqDown = gtk_freq_knob_new(145890000.0, TRUE);
+    gtk_widget_set_name(ctrl->SatFreqDown, "kb_sat_freq_down");
     g_signal_connect(ctrl->SatFreqDown, "freq-changed",
                      G_CALLBACK(downlink_changed_cb), ctrl);
     gtk_box_pack_start(GTK_BOX(vbox), ctrl->SatFreqDown, TRUE, TRUE, 0);
@@ -533,10 +533,12 @@ static GtkWidget *create_downlink_widgets(GtkRigCtrl * ctrl)
     /* Radio downlink frequency */
     label = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(label),
-                         "<span size='large'><b>Radio:</b></span>");
+                         "<span size='large'><b>Radio Rx:</b></span>");
     g_object_set(label, "xalign", 0.5f, "yalign", 1.0f, NULL);
+    gtk_widget_set_name(label, "lb_rig_dl_str");
     gtk_box_pack_start(GTK_BOX(hbox2), label, TRUE, TRUE, 0);
     ctrl->RigFreqDown = gtk_freq_knob_new(145890000.0, FALSE);
+    gtk_widget_set_name(ctrl->RigFreqDown, "kb_rig_freq_down");
     gtk_box_pack_start(GTK_BOX(hbox2), ctrl->RigFreqDown, TRUE, TRUE, 0);
 
     /* finish packing ... */
@@ -573,6 +575,7 @@ static GtkWidget *create_uplink_widgets(GtkRigCtrl * ctrl)
 
     /* satellite uplink frequency */
     ctrl->SatFreqUp = gtk_freq_knob_new(145890000.0, TRUE);
+    gtk_widget_set_name(ctrl->SatFreqUp, "kb_sat_freq_up");
     g_signal_connect(ctrl->SatFreqUp, "freq-changed",
                      G_CALLBACK(uplink_changed_cb), ctrl);
     gtk_box_pack_start(GTK_BOX(vbox), ctrl->SatFreqUp, TRUE, TRUE, 0);
@@ -600,10 +603,11 @@ static GtkWidget *create_uplink_widgets(GtkRigCtrl * ctrl)
     /* Radio uplink frequency */
     label = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(label),
-                         "<span size='large'><b>Radio:</b></span>");
+                         "<span size='large'><b>Radio Tx:</b></span>");
     g_object_set(label, "xalign", 0.5f, "yalign", 1.0f, NULL);
     gtk_box_pack_start(GTK_BOX(hbox2), label, TRUE, TRUE, 0);
-    ctrl->RigFreqUp = gtk_freq_knob_new(145890000.0, FALSE);
+    ctrl->RigFreqUp = gtk_freq_knob_new(145891000.0, FALSE);
+    gtk_widget_set_name(ctrl->RigFreqUp, "kb_rig_freq_up");
     gtk_box_pack_start(GTK_BOX(hbox2), ctrl->RigFreqUp, TRUE, TRUE, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox1, TRUE, TRUE, 10);
@@ -1082,6 +1086,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* tracking button */
     track = gtk_toggle_button_new_with_label(_("Track"));
+    gtk_widget_set_name(track, "bt_sat_track");
     gtk_widget_set_tooltip_text(track,
                                 _("Track the satellite transponder.\n"
                                   "Enabling this button will apply Doppler "
@@ -1099,6 +1104,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* buttons */
     tune = gtk_button_new_with_label(_("T"));
+    gtk_widget_set_name(tune, "bt_tune");
     gtk_widget_set_tooltip_text(tune,
                                 _("Tune the radio to this transponder. "
                                   "The uplink and downlink will be set to the "
@@ -1108,6 +1114,7 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
     g_signal_connect(tune, "clicked", G_CALLBACK(trsp_tune_cb), ctrl);
 
     trsplock = gtk_toggle_button_new_with_label(_("L"));
+    gtk_widget_set_name(trsplock, "bt_lock");
     gtk_widget_set_tooltip_text(trsplock,
                                 _("Lock the uplink and the downlink to each "
                                   "other. Whenever you change the downlink "
@@ -1131,17 +1138,22 @@ static GtkWidget *create_target_widgets(GtkRigCtrl * ctrl)
 
     /* Azimuth */
     label = gtk_label_new(_("Az:"));
+    gtk_widget_set_name(label, "lb_az_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 2, 1, 1);
     ctrl->SatAz = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->SatAz, "lb_az_data");
     g_object_set(ctrl->SatAz, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->SatAz, 1, 2, 1, 1);
 
     /* Elevation */
     label = gtk_label_new(_("El:"));
+    gtk_widget_set_name(label, "lb_el_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 3, 1, 1);
     ctrl->SatEl = gtk_label_new(buff);
+
+    gtk_widget_set_name(ctrl->SatEl, "lb_el_data");
     g_object_set(ctrl->SatEl, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->SatEl, 1, 3, 1, 1);
 
@@ -1360,6 +1372,7 @@ static GtkWidget *create_conf_widgets(GtkRigCtrl * ctrl)
 
     /* Engage button */
     ctrl->LockBut = gtk_toggle_button_new_with_label(_("Engage"));
+    gtk_widget_set_name(ctrl->LockBut, "bt_rig_engage");
     gtk_widget_set_tooltip_text(ctrl->LockBut,
                                 _("Engage the selected radio device"));
     g_signal_connect(ctrl->LockBut, "toggled", G_CALLBACK(rig_engaged_cb),
@@ -1374,7 +1387,7 @@ static GtkWidget *create_conf_widgets(GtkRigCtrl * ctrl)
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 3, 1, 1);
 
-    timer = gtk_spin_button_new_with_range(100, 5000, 10);
+    timer = gtk_spin_button_new_with_range(100, 10000, 10);
     gtk_spin_button_set_digits(GTK_SPIN_BUTTON(timer), 0);
     gtk_widget_set_tooltip_text(timer,
                                 _("This parameter controls the delay between "
@@ -1730,9 +1743,9 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
     /* get PTT status */
     if (ctrl->engaged && ctrl->conf->ptt)
     {
-        printf("engaged and we are ptt enabled\n");	
+        printf("engaged and we are ptt enabled\n");
         ptt = get_ptt(ctrl, ctrl->sock);
-	printf("Got ptt \n");
+        printf("Got ptt \n");
     }
 
     /* Dial feedback:
@@ -1747,7 +1760,7 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
     printf("Engaged is <%d>\n",ctrl->engaged);
     if ((ctrl->engaged) && (ctrl->lasttxf > 0.0))
     {
-	printf("in **\n");
+        printf("in **\n");
         if (ptt == TRUE)
         {
             if (!get_freq_simplex(ctrl, ctrl->sock, &readfreq))
@@ -1828,9 +1841,9 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
     printf("We are tracking got tmpfreq for upload \n");
     /* if device is engaged, send freq command to radio */
     if ((ctrl->engaged) && (ptt == FALSE) &&
-        (fabs(ctrl->lasttxf - tmpfreq) >= 1.0))
+            (fabs(ctrl->lasttxf - tmpfreq) >= 1.0))
     {
-        printf("Set freq (2) \n");	
+        printf("Set freq (2) \n");
         if (set_freq_simplex(ctrl, ctrl->sock, tmpfreq))
         {
             /* reset error counter */
@@ -1848,13 +1861,13 @@ static void exec_tx_cycle(GtkRigCtrl * ctrl)
         }
         else
         {
-            printf("Set freq (2) Error \n");	
+            printf("Set freq (2) Error \n");
             ctrl->errcnt++;
         }
     }
     else
     {
-	    printf("PTT Not set\n");
+        printf("PTT Not set\n");
     }
 }
 
@@ -1923,13 +1936,13 @@ static void exec_toggle_tx_cycle(GtkRigCtrl * ctrl)
     /* if we are in TX mode do nothing */
     if (ptt == TRUE)
     {
-	printf("ptt engaged .. not trying to set TX VFO\n");
+        printf("ptt engaged .. not trying to set TX VFO\n");
         return;
     }
 
     /* Get the desired uplink frequency from controller */
     tmpfreq = gtk_freq_knob_get_value(GTK_FREQ_KNOB(ctrl->RigFreqUp));
-    printf("Ctrl Engaged is <%d>\n",ctrl->engaged);    
+    printf("Ctrl Engaged is <%d>\n",ctrl->engaged);
     /* if device is engaged, send freq command to radio */
     if ((ctrl->engaged) && (fabs(ctrl->lasttxf - tmpfreq) >= 10.0))
     {
@@ -2357,7 +2370,7 @@ static gboolean set_ptt(GtkRigCtrl * ctrl, gint sock, gboolean ptt)
 
 }
 
-/* 
+/*
 Method to get the current mode.
 */
 static gboolean get_mode(GtkRigCtrl * ctrl, gint sock)
@@ -2367,9 +2380,9 @@ static gboolean get_mode(GtkRigCtrl * ctrl, gint sock)
     gboolean        retcode;
     gchar           mode[10];
 
-    
+
     buff = g_strdup_printf("m\x0a");
-    
+
     retcode = send_rigctld_command(ctrl, sock, buff, buffback, 128);
     if (retcode)
     {
@@ -2387,7 +2400,7 @@ static gboolean get_mode(GtkRigCtrl * ctrl, gint sock)
 
 /*
 Method to set the current mode.
-Not sure if we need to do this for both VFO's  
+Not sure if we need to do this for both VFO's
 */
 static gboolean set_mode(GtkRigCtrl * ctrl, gint sock, gchar *wanted_mode)
 {
@@ -2862,7 +2875,7 @@ static void rigctrl_open(GtkRigCtrl * data)
             break;
 
         case RIG_TYPE_TRX:
-	    printf("Rig in TX/RX \n");
+            printf("Rig in TX/RX \n");
             exec_trx_cycle(ctrl);
             break;
 
@@ -3086,9 +3099,4 @@ GtkWidget      *gtk_rig_ctrl_new(GtkSatModule * module)
 
     return widget;
 }
-
-
-
-
-
 

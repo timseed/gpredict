@@ -82,6 +82,7 @@ static gpointer update_tle_thread(gpointer data);
 static void     clean_tle(void);
 static void     clean_trsp(void);
 
+void myCSS(void);
 #ifdef G_OS_WIN32
 static void     InitWinSock2(void);
 static void     CloseWinSock2(void);
@@ -101,6 +102,7 @@ int main(int argc, char *argv[])
     textdomain(PACKAGE);
 #endif
     gtk_init(&argc, &argv);
+    myCSS();
 
     context = g_option_context_new("");
     g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
@@ -626,3 +628,31 @@ static void clean_trsp(void)
     }
     g_free(targetdirname);
 }
+
+
+void myCSS(void){
+    GtkCssProvider *provider;
+    GdkDisplay *display;
+    GdkScreen *screen;
+
+    provider = gtk_css_provider_new ();
+    display = gdk_display_get_default ();
+    screen = gdk_display_get_default_screen (display);
+    gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+    const gchar *myCssFile = "gpredict.css";
+    gchar          *confdir;
+    gchar          *css_to_load;
+    gchar          *dir;
+
+    confdir = get_user_conf_dir();
+    css_to_load  = g_strconcat(confdir, G_DIR_SEPARATOR_S, myCssFile, NULL);
+    g_free(confdir);
+    GError *error = 0;
+
+    gtk_css_provider_load_from_file(provider, g_file_new_for_path(css_to_load), &error);
+    printf("CSS file read in error is <%d>\n",error);
+    g_free(css_to_load);
+    g_object_unref (provider);
+}
+

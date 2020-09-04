@@ -1,0 +1,88 @@
+GtkWindow {
+    background-color: magenta;
+}
+
+GtkButton {
+    background-image: none;
+}
+
+#myGrid {
+    background-color: cyan;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+
+#bt_tune,
+#bt_lock,
+#bt_rot_engage,
+#bt_sat_track,
+#bt_rig_engage{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+/* This is when it is being pressed */
+#bt_tune:active,
+#bt_rot_engage:active,
+#bt_rig_engage:active{
+    color: yellow;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+/* This is when it is being pressed */
+#bt_rot_engage:checked,
+#bt_lock:checked,
+#bt_rig_engage:checked,
+#bt_sat_track:checked{
+    color: red;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;
+}
+
+
+#lb_az_data,
+#lb_rig_dl_data,
+#lb_rig_up_data,
+#lb_el_data,
+#kb_sat_freq_down,
+#kb_rig_freq_down,
+#kb_sat_freq_up,
+#kb_rig_freq_up
+{
+    color: green;
+    font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+#bt_tune,
+#bt_lock,
+#lb_az_str,
+#lb_az_data,
+#lb_el_str,
+#lb_el_data,
+#bt_rig_engage,
+#lb_az_str,
+#lb_az_data,
+#lb_el_str,
+#lb_el_data {
+ color: green;
+ font-family: DejaVu Sans;
+ font-style: normal;
+ font-weight: bold;
+ font-size: 20px;
+}

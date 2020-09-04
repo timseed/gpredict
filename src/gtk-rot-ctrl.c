@@ -62,13 +62,12 @@
 
 static GtkVBoxClass *parent_class = NULL;
 
-
 /* Open the rotcld socket. Returns file descriptor or -1 if an error occurs */
 static gint rotctld_socket_open(const gchar * host, gint port)
 {
     struct sockaddr_in ServAddr;
     struct hostent *h;
-    gint            sock;
+    gint            sock=-1;
     gint            status;
 
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -126,7 +125,9 @@ static gint rotctld_socket_open(const gchar * host, gint port)
 static void rotctld_socket_close(gint * sock)
 {
     gint            written;
-
+    printf("Closing rotcld\n");
+    if (*sock != -1)
+    {
     /*shutdown the rotctld connect */
     written = send(*sock, "q\x0a", 2, 0);
     if (written != 2)
@@ -143,7 +144,7 @@ static void rotctld_socket_close(gint * sock)
     shutdown(*sock, SD_BOTH);
     closesocket(*sock);
 #endif
-
+    }
     *sock = -1;
 }
 
@@ -1285,20 +1286,24 @@ static GtkWidget *create_target_widgets(GtkRotCtrl * ctrl)
                      ctrl);
 
     /* Azimuth */
-    label = gtk_label_new(_("Az:"));
+    label = gtk_label_new(_("Az:")); 
+    gtk_widget_set_name(label, "lb_az_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 1, 1, 1);
 
     ctrl->AzSat = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->AzSat, "lb_az_data");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->AzSat, 1, 1, 1, 1);
 
     /* Elevation */
     label = gtk_label_new(_("El:"));
+    gtk_widget_set_name(label, "lb_el_str");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), label, 0, 2, 1, 1);
 
     ctrl->ElSat = gtk_label_new(buff);
+    gtk_widget_set_name(ctrl->ElSat, "lb_el_data");
     g_object_set(label, "xalign", 1.0f, "yalign", 0.5f, NULL);
     gtk_grid_attach(GTK_GRID(table), ctrl->ElSat, 1, 2, 1, 1);
 
@@ -1394,6 +1399,7 @@ static GtkWidget *create_conf_widgets(GtkRotCtrl * ctrl)
 
     /* Engage button */
     ctrl->LockBut = gtk_toggle_button_new_with_label(_("Engage"));
+    gtk_widget_set_name(ctrl->LockBut, "bt_rot_engage");
     gtk_widget_set_tooltip_text(ctrl->LockBut,
                                 _("Engage the selected rotor device"));
     g_signal_connect(ctrl->LockBut, "toggled", G_CALLBACK(rot_locked_cb),

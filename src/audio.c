@@ -17,6 +17,8 @@ pthread_mutex_t audio_running= PTHREAD_MUTEX_INITIALIZER;
 
 int   play_audio(void)
 {
+    gchar          *audiofile;
+    gchar	   *userconfdir;
     pthread_mutex_lock( &mtx );
     //printf(  "al_init\n" );
     //sleep(THREAD_SLEEP);
@@ -42,7 +44,10 @@ int   play_audio(void)
         return 4;
     }
     //sleep(THREAD_SLEEP);
-    ALLEGRO_SAMPLE *idle_sound = al_load_sample(AUDIO_FILE);
+    userconfdir = get_user_conf_dir();
+    audiofile = g_strconcat(userconfdir, G_DIR_SEPARATOR_S, "audio",
+                          G_DIR_SEPARATOR_S, "arriving.wav", NULL);
+    ALLEGRO_SAMPLE *idle_sound = al_load_sample(audiofile);
     ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(idle_sound);
      if (!idle_sound || !sample_instance) {
         printf("Setup error.\n");

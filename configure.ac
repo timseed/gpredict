@@ -22,30 +22,32 @@ AM_PROG_LIBTOOL
 AC_CHECK_HEADERS([sys/time.h unistd.h getopt.h])
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then
-  CFLAGS="${CFLAGS} -Wall -Wextra -std=c11 -pedantic"
+  CFLAGS="${CFLAGS} -Wall -Wextra -std=c11 -pedantic -g" 
+  echo "debug enabled"
 fi
 AC_CHECK_HEADER([allegro5/allegro.h],[],
  	[AC_MSG_FAILURE([The Allegro version 5 library is needed but not installed], 1)],[])
 
 # Check Allegro Audio is available
 if pkg-config --atleast-version=0.29  allegro_audio-5; then
-	LIBS+="-L /usr/local/lib -l allegro_audio allegro_acodec allegro_main allegro"
-	LIBS+="$LIBS `pkg-config --libs allegro_audio-5`"
+	#LIBS="-L /usr/local/lib -l allegro_audio allegro_acodec allegro_main allegro"
+	LIBS="-L/usr/local/lib -lallegro_audio -lallegro -lallegro_acodec"
+	#LIBS="$LIBS `pkg-config --libs allegro_audio-5`"
 else
 	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
 fi
 # Check Allegro main is available
-if pkg-config --atleast-version=0.29  allegro_main-5; then
-	LIBS+="$LIBS `pkg-config --libs allegro_main-5`"
-else
-	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
-fi
-# Check Allegro codec is available
-if pkg-config --atleast-version=0.29  allegro_acodec-5; then
-	LIBS+="$LIBS `pkg-config --libs allegro_acodec-5`"
-else
-	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
-fi
+#if pkg-config --atleast-version=0.29  allegro_main-5; then
+#	LIBS="$LIBS `pkg-config --libs allegro_main-5`"
+#else
+#	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
+#fi
+## Check Allegro codec is available
+#if pkg-config --atleast-version=0.29  allegro_acodec-5; then
+#	LIBS="$LIBS `pkg-config --libs allegro_acodec-5`"
+#else
+#	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
+#fi
 
 # check for libm
 AC_CHECK_LIB([m], [sin],, AC_MSG_ERROR([Can not find libm. Check your libc installation]))

@@ -66,13 +66,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_audio.h>
-#include <allegro5/allegro_acodec.h>
-#define MAIN_SLEEP 2
-#define THREAD_SLEEP 1
-#define AUDIO_FILE  "/Users/tim/Dev/gpredict-2.2.1/allegro_test/arriving.wav"
-
+#include "audio.h"
+static int thread2;
 #define AZEL_FMTSTR "%7.2f\302\260"
 #define MAX_ERROR_COUNT 5
 #define WR_DEL 5000             /* delay in usec to wait between write and read commands */
@@ -86,8 +81,6 @@ static void     exec_toggle_tx_cycle(GtkRigCtrl * ctrl);
 static void     exec_duplex_cycle(GtkRigCtrl * ctrl);
 static void     exec_duplex_tx_cycle(GtkRigCtrl * ctrl);
 static void     exec_dual_rig_cycle(GtkRigCtrl * ctrl);
-int   play_audio(void);
-static pthread_t thread2;
 static gboolean check_aos_los(GtkRigCtrl * ctrl);
 static gboolean set_freq_simplex(GtkRigCtrl * ctrl, gint sock, gdouble freq);
 static gboolean get_freq_simplex(GtkRigCtrl * ctrl, gint sock, gdouble * freq);
@@ -97,7 +90,6 @@ static gboolean unset_toggle(GtkRigCtrl * ctrl, gint sock);
 static gboolean get_freq_toggle(GtkRigCtrl * ctrl, gint sock, gdouble * freq);
 static gboolean get_ptt(GtkRigCtrl * ctrl, gint sock);
 static gboolean set_ptt(GtkRigCtrl * ctrl, gint sock, gboolean ptt);
-static pthread_mutex_t mtx= PTHREAD_MUTEX_INITIALIZER;
 
 /*  add thread for hamlib communication */
 gpointer        rigctl_run(gpointer data);
@@ -267,7 +259,7 @@ static void update_count_down(GtkRigCtrl * ctrl, gdouble t)
 		{
 			printf("AOS expected in %2d min %2d s\n",m,s);
 		}
-#ifdef SOUND
+#ifndef SOUND
             bFirstTime = false;
             /* Create independent threads each of which will execute function */
             int iret2 = pthread_create( &thread2, NULL, play_audio, NULL);
@@ -2999,72 +2991,6 @@ GtkWidget      *gtk_rig_ctrl_new(GtkSatModule * module)
 }
 
 
-
-
-
-/*
- * How to play an wav file from C code.
- *
- * This is using a thread to play the sound - so that the main-code, can
- * perform something useful - err like counting a number....
- *
- *
- *
- */
-
-
-
-
-int   play_audio(void)
-{
-    pthread_mutex_lock( &mtx );
-    printf(  "al_init\n" );
-    sleep(THREAD_SLEEP);
-    if (!al_init()) {
-        pthread_mutex_unlock(&mtx);
-        return 1;
-    }
-    printf(  "install_audio\n" );
-    if (!al_install_audio()) {
-        pthread_mutex_unlock(&mtx);
-        return 2;
-    }
-    sleep(THREAD_SLEEP);
-    printf(  "ac_codec\n" );
-    if (!al_init_acodec_addon()) {
-        pthread_mutex_unlock(&mtx);
-        return 3;
-    }
-    sleep(THREAD_SLEEP);
-    printf(  "reserve_samples\n" );
-    if (!al_reserve_samples(1)) {
-        pthread_mutex_unlock(&mtx);
-        return 4;
-    }
-    sleep(THREAD_SLEEP);
-    ALLEGRO_SAMPLE *idle_sound = al_load_sample(AUDIO_FILE);
-    ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(idle_sound);
-    if (!idle_sound || !sample_instance) {
-        printf("Setup error.\n");
-        pthread_mutex_unlock(&mtx);
-        return 5;
-    }
-    ALLEGRO_SAMPLE_ID sample_id;
-
-    if (!al_play_sample(idle_sound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, &sample_id)) {
-        printf("Failed to play sample.\n");
-    }
-    if (!al_play_sample_instance(sample_instance)) {
-        printf("Failed to play sample instance.\n");
-    }
-    al_rest(5.0);
-
-    al_destroy_sample_instance(sample_instance);
-    al_destroy_sample(idle_sound);
-    printf(  "Thread I have finished" );
-    pthread_mutex_unlock(&mtx);
-    return 1;
-}
 
 
 

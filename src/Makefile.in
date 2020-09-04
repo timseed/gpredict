@@ -109,22 +109,23 @@ am_gpredict_OBJECTS = nxjson/nxjson.$(OBJEXT) \
 	sgpsdp/sgp4sdp4.$(OBJEXT) sgpsdp/sgp_in.$(OBJEXT) \
 	sgpsdp/sgp_math.$(OBJEXT) sgpsdp/sgp_obs.$(OBJEXT) \
 	sgpsdp/sgp_time.$(OBJEXT) sgpsdp/solar.$(OBJEXT) \
-	about.$(OBJEXT) compat.$(OBJEXT) first-time.$(OBJEXT) \
-	gpredict-help.$(OBJEXT) gpredict-utils.$(OBJEXT) \
-	gtk-azel-plot.$(OBJEXT) gtk-event-list.$(OBJEXT) \
-	gtk-event-list-popup.$(OBJEXT) gtk-freq-knob.$(OBJEXT) \
-	gtk-polar-plot.$(OBJEXT) gtk-polar-view.$(OBJEXT) \
-	gtk-polar-view-popup.$(OBJEXT) gtk-rig-ctrl.$(OBJEXT) \
-	gtk-rot-ctrl.$(OBJEXT) gtk-rot-knob.$(OBJEXT) \
-	gtk-sat-data.$(OBJEXT) gtk-sat-list.$(OBJEXT) \
-	gtk-sat-list-popup.$(OBJEXT) gtk-sat-map.$(OBJEXT) \
-	gtk-sat-map-popup.$(OBJEXT) gtk-sat-map-ground-track.$(OBJEXT) \
-	gtk-sat-module.$(OBJEXT) gtk-sat-module-popup.$(OBJEXT) \
-	gtk-sat-module-tmg.$(OBJEXT) gtk-sat-popup-common.$(OBJEXT) \
-	gtk-sat-selector.$(OBJEXT) gtk-single-sat.$(OBJEXT) \
-	gtk-sky-glance.$(OBJEXT) gui.$(OBJEXT) loc-tree.$(OBJEXT) \
-	locator.$(OBJEXT) main.$(OBJEXT) map-selector.$(OBJEXT) \
-	map-tools.$(OBJEXT) menubar.$(OBJEXT) mod-cfg.$(OBJEXT) \
+	about.$(OBJEXT) audio.$(OBJEXT) compat.$(OBJEXT) \
+	first-time.$(OBJEXT) gpredict-help.$(OBJEXT) \
+	gpredict-utils.$(OBJEXT) gtk-azel-plot.$(OBJEXT) \
+	gtk-event-list.$(OBJEXT) gtk-event-list-popup.$(OBJEXT) \
+	gtk-freq-knob.$(OBJEXT) gtk-polar-plot.$(OBJEXT) \
+	gtk-polar-view.$(OBJEXT) gtk-polar-view-popup.$(OBJEXT) \
+	gtk-rig-ctrl.$(OBJEXT) gtk-rot-ctrl.$(OBJEXT) \
+	gtk-rot-knob.$(OBJEXT) gtk-sat-data.$(OBJEXT) \
+	gtk-sat-list.$(OBJEXT) gtk-sat-list-popup.$(OBJEXT) \
+	gtk-sat-map.$(OBJEXT) gtk-sat-map-popup.$(OBJEXT) \
+	gtk-sat-map-ground-track.$(OBJEXT) gtk-sat-module.$(OBJEXT) \
+	gtk-sat-module-popup.$(OBJEXT) gtk-sat-module-tmg.$(OBJEXT) \
+	gtk-sat-popup-common.$(OBJEXT) gtk-sat-selector.$(OBJEXT) \
+	gtk-single-sat.$(OBJEXT) gtk-sky-glance.$(OBJEXT) \
+	gui.$(OBJEXT) loc-tree.$(OBJEXT) locator.$(OBJEXT) \
+	main.$(OBJEXT) map-selector.$(OBJEXT) map-tools.$(OBJEXT) \
+	menubar.$(OBJEXT) mod-cfg.$(OBJEXT) \
 	mod-cfg-get-param.$(OBJEXT) mod-mgr.$(OBJEXT) \
 	orbit-tools.$(OBJEXT) pass-popup-menu.$(OBJEXT) \
 	pass-to-txt.$(OBJEXT) predict-tools.$(OBJEXT) \
@@ -169,9 +170,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/compat.Po \
-	./$(DEPDIR)/first-time.Po ./$(DEPDIR)/gpredict-help.Po \
-	./$(DEPDIR)/gpredict-utils.Po ./$(DEPDIR)/gtk-azel-plot.Po \
+am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/audio.Po \
+	./$(DEPDIR)/compat.Po ./$(DEPDIR)/first-time.Po \
+	./$(DEPDIR)/gpredict-help.Po ./$(DEPDIR)/gpredict-utils.Po \
+	./$(DEPDIR)/gtk-azel-plot.Po \
 	./$(DEPDIR)/gtk-event-list-popup.Po \
 	./$(DEPDIR)/gtk-event-list.Po ./$(DEPDIR)/gtk-freq-knob.Po \
 	./$(DEPDIR)/gtk-polar-plot.Po \
@@ -485,6 +487,7 @@ gpredict_SOURCES = \
     sgpsdp/sgp_time.c \
     sgpsdp/solar.c \
     about.c about.h \
+    audio.c audio.h \
     compat.c compat.h config-keys.h \
     first-time.c first-time.h \
     gpredict-help.c gpredict-help.h \
@@ -693,6 +696,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/about.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/first-time.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpredict-help.Po@am__quote@ # am--include-marker
@@ -1026,6 +1030,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-recursive
 		-rm -f ./$(DEPDIR)/about.Po
+	-rm -f ./$(DEPDIR)/audio.Po
 	-rm -f ./$(DEPDIR)/compat.Po
 	-rm -f ./$(DEPDIR)/first-time.Po
 	-rm -f ./$(DEPDIR)/gpredict-help.Po
@@ -1163,6 +1168,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
 		-rm -f ./$(DEPDIR)/about.Po
+	-rm -f ./$(DEPDIR)/audio.Po
 	-rm -f ./$(DEPDIR)/compat.Po
 	-rm -f ./$(DEPDIR)/first-time.Po
 	-rm -f ./$(DEPDIR)/gpredict-help.Po

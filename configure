@@ -12672,7 +12672,8 @@ done
 
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then
-  CFLAGS="${CFLAGS} -Wall -Wextra -std=c11 -pedantic"
+  CFLAGS="${CFLAGS} -Wall -Wextra -std=c11 -pedantic -g"
+  echo "debug enabled"
 fi
 ac_fn_c_check_header_mongrel "$LINENO" "allegro5/allegro.h" "ac_cv_header_allegro5_allegro_h" "$ac_includes_default"
 if test "x$ac_cv_header_allegro5_allegro_h" = xyes; then :
@@ -12688,22 +12689,24 @@ fi
 
 # Check Allegro Audio is available
 if pkg-config --atleast-version=0.29  allegro_audio-5; then
-	LIBS+="$LIBS `pkg-config --libs allegro_audio-5`"
+	#LIBS="-L /usr/local/lib -l allegro_audio allegro_acodec allegro_main allegro"
+	LIBS="-L/usr/local/lib -lallegro_audio -lallegro -lallegro_acodec"
+	#LIBS="$LIBS `pkg-config --libs allegro_audio-5`"
 else
 	as_fn_error $? "Gpredict requires  allegro5 0.29 or later" "$LINENO" 5
 fi
 # Check Allegro main is available
-if pkg-config --atleast-version=0.29  allegro_main-5; then
-	LIBS+="$LIBS `pkg-config --libs allegro_main-5`"
-else
-	as_fn_error $? "Gpredict requires  allegro5 0.29 or later" "$LINENO" 5
-fi
-# Check Allegro codec is available
-if pkg-config --atleast-version=0.29  allegro_acodec-5; then
-	LIBS+="$LIBS `pkg-config --libs allegro_acodec-5`"
-else
-	as_fn_error $? "Gpredict requires  allegro5 0.29 or later" "$LINENO" 5
-fi
+#if pkg-config --atleast-version=0.29  allegro_main-5; then
+#	LIBS="$LIBS `pkg-config --libs allegro_main-5`"
+#else
+#	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
+#fi
+## Check Allegro codec is available
+#if pkg-config --atleast-version=0.29  allegro_acodec-5; then
+#	LIBS="$LIBS `pkg-config --libs allegro_acodec-5`"
+#else
+#	AC_MSG_ERROR(Gpredict requires  allegro5 0.29 or later)
+#fi
 
 # check for libm
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sin in -lm" >&5

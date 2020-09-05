@@ -335,8 +335,7 @@ static void size_allocate_cb(GtkWidget * widget, GtkAllocation * allocation,
         j = -1;
         curcat = 0;
         y = 10.0;
-        h = 10.0;
-	int box_height=0;
+        h = 10.0;  // Now using sat max_el
         for (i = 0; i < n; i++)
         {
             /* get pass */
@@ -363,9 +362,8 @@ static void size_allocate_cb(GtkWidget * widget, GtkAllocation * allocation,
                                  "anchor", GOO_CANVAS_ANCHOR_W, NULL);
             }
 	    // Grab max_el from the pass data, and use this as a height indicator. 
-	    box_height=skp->pass->max_el;
             g_object_set(skp->box,
-                         "x", x, "y", y, "width", w, "height", h+box_height, NULL);
+                         "x", x, "y", y, "width", w, "height", skp->pass->max_el, NULL);
             /* need to raise item, otherwise it will not receive new events */
             goo_canvas_item_raise(skp->box, NULL);
         }
